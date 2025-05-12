@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.6.9/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+    <h1></h1>
+
+    <!--label for="name">姓名：</label>
+    <input type="text" id="name" placeholder="請輸入姓名"><br><br>
+
+    <label for="studentId">學號：</label>
+    <input type="text" id="studentId" placeholder="請輸入學號"><br><br-->
+    
+    <button onclick="connectBlockchain()">連接錢包</button>
+
+    <script>
+        const studentid = localStorage.getItem('studentid'); 
+        const username = localStorage.getItem('username'); 
+    </script>
+
+    <!--button onclick="bcregister(
+    document.getElementById('name').value,
+    document.getElementById('studentId').value
+    )">註冊</button-->
+    <button onclick="bcregister(username,studentid)">註冊</button><br><br>
+    <button onclick="location.href='user.html'">回前頁</button>
+    <button onclick="location.href='index.html'">返回登入</button>
+
+    <div id="output"></div>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

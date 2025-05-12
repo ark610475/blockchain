@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain login</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.6.9/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+    <h1>校務資訊系統</h1>
+    <!--input id="loginUser" placeholder="帳號"-->
+    <!--input id="loginPass" placeholder="密碼" type="password"-->
+    <label for="loginUser">帳號</label>
+    <input id="loginUser"><br><br>
+    <label for="loginPass">密碼</label>
+    <input type="password" id="loginPass"><br><br>
+    <button onclick="acclogin()">登入</button><br><br><br><br>
+
+    <button onclick="connectBlockchain()">連接錢包</button>
+    <button onclick="loginStudent()">區塊鏈登入</button><br><br>
+    <button onclick="location.href='accregister.html'">註冊</button>
+    <!--button onclick="location.href='register.html'">📝 區塊鏈身份註冊</button-->
+
+  
+    <div id="output"></div>
+    <p id="msg"></p>
+
+    <!--script type="module" src="app.js"></script-->
+    <script src="config.js"></script>
+    <script defer src="app.js"></script>
+    
+</body>
+</html>

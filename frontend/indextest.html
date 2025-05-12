@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>學生註冊系統</title>
+
+  <!-- 一定要先載入 ethers.js -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.6.9/dist/ethers.umd.min.js"></script>
+  
+</head>
+<body>
+  <h1>區塊鏈學生註冊系統</h1>
+
+  <button onclick="connectBlockchain()">連接錢包</button><br><br>
+
+  <label for="name">姓名：</label>
+  <input type="text" id="name" placeholder="請輸入姓名"><br><br>
+
+  <label for="studentId">學號：</label>
+  <input type="text" id="studentId" placeholder="請輸入學號"><br><br>
+
+  <button onclick="loginStudent()">登入</button>
+  <button onclick="registerStudent(
+    document.getElementById('name').value,
+    document.getElementById('studentId').value
+  )">註冊</button>
+
+  <div id="output"></div>
+  <!-- 這個包含合約 ABI -->
+  <!--script src="abi.js"></script-->
+  <!-- 你自己的邏輯 -->
+  <script defer src="app.js"></script>
+</body>
+</html>
