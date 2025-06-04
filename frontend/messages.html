@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>留言板</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.6.9/dist/ethers.umd.min.js"></script>
+  <style>
+    .comment-block {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+  
+    .reactions button {
+      margin-right: 5px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  
+    .reply-section {
+      margin-top: 10px;
+    }
+  
+    .reply-section input {
+      width: 70%;
+      padding: 5px;
+      margin-right: 5px;
+    }
+  
+    .reply-list {
+      margin-top: 5px;
+      padding-left: 10px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+  
+</head>
+<body>
+  <h2>清交二手大拍賣 XD</h2>
+
+  <div>
+    <h3>發佈貼文</h3>
+    <textarea id="msg" placeholder="輸入你的留言..."></textarea><br/>
+    <button id="sendBtn">送出留言</button>
+  </div>
+
+  <div id="messages"></div>
+
+  <script src="config.js"></script> <!-- 定義 contractAddress 和 contractABI -->
+
+  <script>
+    let provider, signer, studentRegistry;
+
+    async function init() {
+      if (typeof window.ethereum === 'undefined') {
+        alert("請先安裝 MetaMask！");
+        return;
+      }
+      studentid = localStorage.getItem('studentid');
+      const res = await fetch(`http://localhost:3000/getdata/${studentid}`);
+      const data = await res.json();
+      if(data.data[0].wallet_address==null){
+        alert("請先連結錢包！");
+        location.href = "user.html";
+      }
+
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = provider.getSigner();
+      studentRegistry = new ethers.Contract(contractAddress, contractABI, signer);
+      
+
+      await loadMessages(); // 初始化時先載入留言
+    }
+
+
+    async function postmessage() {
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      const currentAccount = accounts[0];
+      const message = document.getElementById("msg").value;
+      //const address = await signer.getAddress();
+
+      const isRegistered = await studentRegistry.isRegistered(currentAccount);
+      if (!isRegistered) {
+        alert("請先註冊學生身份！");
+        return;
+      }
+
+      const [name, studentId, wallet] = await studentRegistry.getMyInfo();
+      const address = currentAccount;
+
+      const res = await fetch("http://localhost:3000/comment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentId, address, message }),
+      });
+
+      const data = await res.json();
+      alert("留言成功！");
+      await loadMessages();
+    }
+
+    async function loadMessages() {
+      const res = await fetch("http://localhost:3000/messages");
+      const messages = await res.json();
+
+      const container = document.getElementById("messages");
+      container.innerHTML = "";
+      messages.forEach((msg, index) => {
+        const block = `
+            <div class="comment-block">
+            <p><b>${msg.studentid}</b>(${msg.address})</p>
+            <p>${msg.message}</p>
+
+            <!-- 心情按鈕 -->
+            <div class="reactions">
+                <button onclick="react(${index}, 'thumb')">👍</button>
+                <button onclick="react(${index}, 'happy')">😆</button>
+                <button onclick="react(${index}, 'sad')">😢</button>
+                <button onclick="react(${index}, 'angry')">😡</button>
+                <button onclick="react(${index}, 'heart')">❤️</button>
+            </div>
+
+            <!-- 回覆區 -->
+            <div class="reply-section">
+                <input type="text" id="reply-${index}" placeholder="回覆這則留言..." />
+                <button onclick="submitReply(${index})">送出回覆</button>
+                <div id="replies-${index}" class="reply-list"></div>
+            </div>
+            </div>
+        `;
+        container.innerHTML += block;
+       });
+
+    }
+
+    function react(index, mood) {
+  alert(`你對第 ${index + 1} 則留言選擇了「${mood}」心情`);
+}
+
+    function submitReply(index) {
+    const replyInput = document.getElementById(`reply-${index}`);
+    const replyText = replyInput.value.trim();
+    if (replyText) {
+        const replyList = document.getElementById(`replies-${index}`);
+        replyList.innerHTML += `<div>💬 ${replyText}</div>`;
+        replyInput.value = "";
+    }
+    }
+
+    
+
+    window.onload = async () => {
+      await init();
+      document.getElementById("sendBtn").addEventListener("click", postmessage);
+    };
+  </script>
+</body>
+</html>

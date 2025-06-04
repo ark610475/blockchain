@@ -2,6 +2,8 @@ let studentRegistry; // 全域合約變數
 let cur_account;
 
 
+
+
 async function init() {
   if (typeof window.ethereum === 'undefined') {
     alert("請先安裝 MetaMask！");
@@ -11,7 +13,7 @@ async function init() {
   // 使用 MetaMask 提供的 provider
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = await provider.getSigner();
-
+  //console.log("signer 是：", signer);
   //const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   studentRegistry = new ethers.Contract(contractAddress, contractABI, signer);
 
@@ -103,11 +105,11 @@ async function loginStudent() {
   
     try {
       
-      // 1. 連結錢包
+      // 連結錢包
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
       const currentAccount = accounts[0];
       //document.getElementById("output").innerText = `觸發！`
-      // 2. 檢查是否註冊過
+      //檢查是否註冊過
       const isRegistered = await studentRegistry.isRegistered(currentAccount);
       
       if (!isRegistered) {
@@ -115,18 +117,32 @@ async function loginStudent() {
         alert("尚未註冊，請先註冊！");
         return;
       }
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const message = `Login to MyApp at ${new Date().toISOString()}`;
+      const signature = await signer.signMessage(message);
+      console.log("Signature:", signature);
+      //const recoveredAddress = ethers.utils.verifyMessage(message, signature);
+      //console.log("Recovered Address:", recoveredAddress);
+      const res = await fetch('http://localhost:3000/bclogin',{
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, signature }),
+      });
+      const data = await res.json();
       
-      // 3. 讀取使用者資料
+      if(!data.success){
+        alert("區塊鏈登入失敗！");
+        return;
+      }
+      // 讀取使用者資料
       const [name, studentId, wallet] = await studentRegistry.getMyInfo();
 
-      localStorage.removeItem('studentid');  // 清除帳密登入的學號資料
-      localStorage.setItem('studentid', studentId);  // 儲存區塊鏈學號  
+      localStorage.removeItem('studentid');  
+      localStorage.setItem('studentid', studentId);  
 
-      localStorage.setItem('studentid', studentId);
+      //localStorage.setItem('studentid', studentId);
       window.location.href = 'user.html';
-  
-      // 4. 顯示在頁面上
-      //document.getElementById("output").innerText = `登入成功！ 姓名：${name} 學號：${studentId}錢包地址：${wallet}`;
     } catch (err) {
         console.error("登入失敗：", err);
         alert("登入過程中發生錯誤");

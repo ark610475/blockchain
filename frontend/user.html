@@ -25,6 +25,7 @@
     }
   </script>
 
+  <button onclick="location.href='messages.html'">清交二手拍</button><br><br>
   <button onclick="location.href='register.html'">📝 區塊鏈身份註冊</button><br><br>
   <button id="switchbutton" onclick="lockpass()"></button>
   <p id="state"></p><br><br>
@@ -49,7 +50,7 @@
           lockstate =  data.data[0].password_locked;
           if(lockstate==0){
             document.getElementById('state').innerText = `目前狀態：允許使用帳號密碼登入`;
-            document.getElementById('switchbutton').innerText = `鎖定帳號密碼登入權限`;
+            document.getElementById('switchbutton').innerText = `關閉帳號密碼登入權限`;
           }else{
             document.getElementById('state').innerText = `目前狀態：只允許區塊鏈登入`;
             document.getElementById('switchbutton').innerText = `啟用帳號密碼登入權限`;
@@ -81,7 +82,7 @@
       else if(lockstate==1){
         lockstate = 0;
         document.getElementById('state').innerText = `目前狀態：允許使用帳號密碼登入`;
-        document.getElementById('switchbutton').innerText = `鎖定帳號密碼登入權限`;
+        document.getElementById('switchbutton').innerText = `關閉帳號密碼登入權限`;
         const res = await fetch('http://localhost:3000/switchlock', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
